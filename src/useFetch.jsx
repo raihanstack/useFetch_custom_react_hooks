@@ -1,48 +1,24 @@
 import { useState, useEffect } from "react";
 
-const UserList = () => {
-  const [users, setUsers] = useState([]);
+export const useFetch = (url, initData) => {
+  const [data, setData] = useState(initData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setUsers(data);
+    fetch(url)
+      .then((response) => response.json())
+      .then((result) => {
+        setData(result);
         setLoading(false);
-        setError('');
+        setError(null);
       })
       .catch((error) => {
         setError(error.message);
         setLoading(false);
-        setUsers([]);
+        setData(initData);
       });
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  return (
-    <>
-      {loading && <h3>Loading...</h3>}
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
-        ))}
-      </ul>
-    </>
-  );
+  return { data, loading, error };
 };
-
-export default UserList;
